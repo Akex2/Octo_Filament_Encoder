@@ -1,0 +1,4 @@
+include README.md
+recursive-include octo_filament_encoder/templates *
+recursive-include octo_filament_encoder/translations *
+recursive-include octo_filament_encoder/static *
