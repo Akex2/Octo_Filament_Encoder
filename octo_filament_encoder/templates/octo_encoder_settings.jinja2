@@ -1,0 +1,62 @@
+<strong>Calibrated: 
+	<span style="color: green" data-bind="visible: settings.plugins.octo_encoder.calibrated">Yes</span>
+	<span style="color: red" data-bind="visible: !settings.plugins.octo_encoder.calibrated()">No</span>
+</strong>
+
+<form class="form-horizontal">
+	<h4>General</h4>
+	<div class="control-group">
+		<div class="controls">
+			<label class="checkbox">
+			<input type="checkbox" data-bind="checked: settings.plugins.octo_encoder.enable"> Plugin enabled if it's checked.
+			</label>
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label">{{ _('CPR/mm') }}</label>
+		<div class="controls">
+			<input type="number" min="0" class="input-mini text-right" data-bind="value: settings.plugins.octo_encoder.cprMM">
+			<span class="add-on">mm</span>
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label">{{ _('error/mm') }}</label>
+		<div class="controls">
+			<input type="text" class="input-block-level" data-bind="value: settings.plugins.octo_encoder.errorMM">
+			<span class="help-block">{% trans %}
+					c est le taux erreur accepter
+				{% endtrans %}
+			</span>
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label">{{ _('Timer minute') }}</label>
+		<div class="controls">
+			<input type="number" min="0" class="input-mini text-right" data-bind="value: settings.plugins.octo_encoder.loop">
+			<span class="add-on">min</span>
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label">commande</label>
+		<div class="controls">
+			<textarea class="block" rows="4" data-bind="value: settings.plugins.octo_encoder.commande"></textarea>
+		</div>
+	</div>
+	<h4>Calibration</h4>
+	<div class="control-group">
+		<div class="controls" >
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.octo_encoder.autocalib"> Auto-Calibration.
+			</label>
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label">Auto-calib Method</label>
+		<div class="controls">
+			<select data-bind="value: settings.plugins.octo_encoder.methode">
+				<option value="nextprint">Next print</option>
+				<option value="nextmove">Next move</option>
+			</select>
+		</div>
+	</div>
+</form>
