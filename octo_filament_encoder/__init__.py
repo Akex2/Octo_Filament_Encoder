@@ -16,15 +16,12 @@ from octoprint.events import Events
 from octoprint.server import admin_permission
 from flask.ext.login import current_user
 
-#import pushbullet
-import flask
+
 import datetime
-import sarge
-import collections
 import threading
 from threading import Timer
 from octoprint.util import RepeatedTimer
-from pyky040 import pyky040
+from Rpi_encoder import Rpi_encoder
 #import time
 class travel():
 	"""docstring for travel"""
@@ -46,7 +43,7 @@ class encoder():
 		def my_callback(scale_position):
 			self.distance = scale_position
 		# Init the encoder pins
-		self.my_encoder = pyky040.Encoder(CLK=17, DT=18, SW=26)
+		self.my_encoder = Rpi_encoder.Encoder(CLK=17, DT=18, SW=26)
 		self.my_encoder.setup(scale_min=(-1000), scale_max=100000, step=1, chg_callback=my_callback, counter = 0)
 
 		# Create the thread
@@ -133,7 +130,7 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 					olddata = (stepsend+olddata)
 					self.step.set_data(olddata)
 					erreur = (olddata-encoder_step)
-					#self._logger.info("avant if autocalib et job")
+					#self._logger.info(encoder_step)
 					if (self._settings.get_boolean(["autocalib"]) == True ) :
 						self._logger.info("apres if autocalib")
 						if (self._settings.get(["methode"]) == "nextmove" ) :
@@ -153,7 +150,7 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 							#self._logger.info("B E holdstep: {holdstep}".format(**locals()))
 							#self._logger.info("B E stepsend: {stepsend}".format(**locals()))
 					
-		olddata=(self._settings.get(["cprMM"]))
+		olddata=(self.encoder.get_data())
 		self._logger.info("compteur: {olddata}".format(**locals()))
 		return cmd,
 		
