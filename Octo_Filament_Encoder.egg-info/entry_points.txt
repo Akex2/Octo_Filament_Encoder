@@ -1,0 +1,3 @@
+[octoprint.plugin]
+octo_encoder = octo_filament_encoder
+

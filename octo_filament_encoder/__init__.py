@@ -69,12 +69,13 @@ class encoder():
 		self.my_thread.stop()  # Initial scale position
 
 class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
+						octoprint.plugin.AssetPlugin,
 						octoprint.plugin.EventHandlerPlugin,
 						octoprint.plugin.StartupPlugin,
 						octoprint.plugin.ShutdownPlugin,
 						octoprint.plugin.SettingsPlugin,
-						octoprint.plugin.OctoPrintPlugin):
-						#octoprint.plugin.TemplatePlugin):
+						octoprint.plugin.OctoPrintPlugin,
+						):
 	def __init__(self):
 		#super(travel, self).__init__()
 		self.oldstep = travel()
@@ -113,7 +114,7 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 
 			else :
 				if E in cmd :
-					self._logger.info("cmd: preumsssssss")
+					#self._logger.info("cmd: preumsssssss")
 					holdstep = self.oldstep.get_data()
 					encoder_step = self.encoder.get_data()
 					#self._logger.info(cmd)
@@ -138,11 +139,12 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 					else :
 						self._logger.info("calibrated do job")
 						self._logger.info("erreur: {erreur}".format(**locals()))
+						self._logger.info("erreur: {olddata}".format(**locals()))
+						self._logger.info("erreur: {encoder_step}".format(**locals()))
 						if (erreur > (self._settings.get_int(["errorMM"]))) :
 							self._logger.info("erreur: trop importante!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-							'''
 							cmd = self._settings.get(["commande"])
-							'''
+							
 							#self._logger.info(type(step))
 							#self._logger.info(step)
 							#self._logger.info("index: {i}".format(**locals()))
@@ -150,11 +152,12 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 							#self._logger.info("B E holdstep: {holdstep}".format(**locals()))
 							#self._logger.info("B E stepsend: {stepsend}".format(**locals()))
 					
-		olddata=(self.encoder.get_data())
-		self._logger.info("compteur: {olddata}".format(**locals()))
+		#olddata=(self.encoder.get_data())
+		#self._logger.info("compteur: {olddata}".format(**locals()))
 		return cmd,
 		
 	def on_event(self, event, payload):
+		self._logger.info("test strart print {event}".format(**locals()))
 		if event == "PrintStarted":
 			self.encoder.set_data()
 			self.oldstep.set_data(0)
@@ -171,6 +174,13 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 			if (self._settings.get_boolean(["autocalib"]) == True ) :
 				self._logger.info("apres if autocalib")
 				self.timer2.start()
+		if event == "PrintResumed" : #or event == "PrintCanceled" :
+			if (self._settings.get_boolean(["autocalib"]) == False ) :
+				self._logger.info("reset resumed")
+				self.encoder.set_data()
+				self.oldstep.set_data(0)
+				self.step.set_data(0)
+
 				
 
 
@@ -195,6 +205,11 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 			#dict(type="navbar", custom_bindings=False),
 			dict(type="settings", custom_bindings=False)
 		]
+
+	def get_assets(self):
+		return dict(
+		js=["js/octo_encoder.js"]
+		)
 
 	def on_settings_save(self, data):
 		self.encoder.set_data()

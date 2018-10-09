@@ -5,58 +5,80 @@
 
 <form class="form-horizontal">
 	<h4>General</h4>
-	<div class="control-group">
+	<div title ="Enable Plugin!!" class="control-group">
 		<div class="controls">
 			<label class="checkbox">
 			<input type="checkbox" data-bind="checked: settings.plugins.octo_encoder.enable"> Plugin enabled if it's checked.
 			</label>
 		</div>
 	</div>
-	<div class="control-group">
+	<div title ="CPR/mm Setup" class="control-group">
 		<label class="control-label">{{ _('CPR/mm') }}</label>
 		<div class="controls">
 			<input type="number" min="0" class="input-mini text-right" data-bind="value: settings.plugins.octo_encoder.cprMM">
 			<span class="add-on">mm</span>
 		</div>
-	</div>
-	<div class="control-group">
-		<label class="control-label">{{ _('error/mm') }}</label>
 		<div class="controls">
-			<input type="text" class="input-block-level" data-bind="value: settings.plugins.octo_encoder.errorMM">
-			<span class="help-block">{% trans %}
-					c est le taux erreur accepter
-				{% endtrans %}
+			<span class="help-inline">
+				Cpr count for one mm.
 			</span>
 		</div>
 	</div>
-	<div class="control-group">
+	<div title ="Error setup" class="control-group">
+		<label class="control-label">{{ _('error/mm') }}</label>
+		<div class="controls">
+			<input type="text" class="input-mini text-right" data-bind="value: settings.plugins.octo_encoder.errorMM">
+			<span class="add-on">mm</span>
+		</div>
+		<div class="controls">
+			<span class="help-inline">
+				Error accepted before run the command block.
+			</span>
+		</div>
+	</div>
+	<div title ="Reset timer" class="control-group">
 		<label class="control-label">{{ _('Timer minute') }}</label>
 		<div class="controls">
 			<input type="number" min="0" class="input-mini text-right" data-bind="value: settings.plugins.octo_encoder.loop">
 			<span class="add-on">min</span>
 		</div>
+		<div class="controls">
+			<span class="help-inline">
+				Timer reset all count (for big print: keep good precision).
+			</span>
+		</div>
 	</div>
-	<div class="control-group">
+	<div title ="Commande block" class="control-group">
 		<label class="control-label">commande</label>
 		<div class="controls">
 			<textarea class="block" rows="4" data-bind="value: settings.plugins.octo_encoder.commande"></textarea>
 		</div>
+		<div class="controls">
+			<span class="help-inline">
+				Command sent if error is True.
+			</span>
+		</div>
 	</div>
 	<h4>Calibration</h4>
-	<div class="control-group">
+	<div title ="Auto-Calibration" class="control-group">
 		<div class="controls" >
 			<label class="checkbox">
 				<input type="checkbox" data-bind="checked: settings.plugins.octo_encoder.autocalib"> Auto-Calibration.
 			</label>
 		</div>
 	</div>
-	<div class="control-group">
+	<div title ="Auto-Calib Method" class="control-group">
 		<label class="control-label">Auto-calib Method</label>
 		<div class="controls">
 			<select data-bind="value: settings.plugins.octo_encoder.methode">
 				<option value="nextprint">Next print</option>
 				<option value="nextmove">Next move</option>
 			</select>
+		</div>
+		<div class="controls">
+			<span class="help-inline">
+				Auto-calib methode.
+			</span>
 		</div>
 	</div>
 </form>

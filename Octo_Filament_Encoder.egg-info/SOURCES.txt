@@ -1,0 +1,14 @@
+MANIFEST.in
+README.md
+Octo_Filament_Encoder.egg-info/PKG-INFO
+Octo_Filament_Encoder.egg-info/SOURCES.txt
+Octo_Filament_Encoder.egg-info/dependency_links.txt
+Octo_Filament_Encoder.egg-info/entry_points.txt
+Octo_Filament_Encoder.egg-info/not-zip-safe
+Octo_Filament_Encoder.egg-info/requires.txt
+Octo_Filament_Encoder.egg-info/top_level.txt
+octo_filament_encoder/__init__.py
+octo_filament_encoder/static/css/octo_encoder.css
+octo_filament_encoder/static/js/octo_encoder.js
+octo_filament_encoder/static/less/octo_encoder.less
+octo_filament_encoder/templates/octo_encoder_settings.jinja2
