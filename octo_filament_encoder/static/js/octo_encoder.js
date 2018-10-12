@@ -67,10 +67,16 @@ $(function () {
                         self.updateState(data);
                     }
                     break;
-                case "state-changed":
+                case "x_graph":
                     {
-                        //console.log('Octo_encoder.js - state-changed');
-                        self.updateState(data);
+                        //console.log('octolapse.js - popup');
+                        var data = {
+                            x: data.msg,
+                            y: indice data.msg
+                            }
+                        };
+
+                        Plotly.newPlot('tester', data);
                     }
                     break;
                 case "popup":
