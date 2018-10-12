@@ -6,7 +6,7 @@ __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agp
 __copyright__ = "Copyright (C) 2015 The OctoPrint Project - Released under terms of the AGPLv3 License"
 
 import os
-
+import json
 import time
 import octoprint.util
 import octoprint.plugin
@@ -88,6 +88,7 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 		self.ratio = 1
 		self.bool = 0
 		#self._logger.info("init OK")
+
 	def rewrite_m107(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
 		E = 'E'
 		#self._logger.info("phase: {phase}".format(**locals()))
@@ -158,11 +159,20 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 		
 	def on_event(self, event, payload):
 		self._logger.info("test strart print {event}".format(**locals()))
+		#result = self.start_timelapse()
+		message = "test akex on popup"
+		data = {
+			"type": "popup",
+			"msg": message,
+		}
+		#self.send_popup_message(self._identifier, message)
+		self._plugin_manager.send_plugin_message(self._identifier, data)
 		if event == "PrintStarted":
 			self.encoder.set_data()
 			self.oldstep.set_data(0)
 			self.step.set_data(0)
 			self._logger.info("test strart print {event}".format(**locals()))
+			self.send_popup_message(self._identifier, event)
 			if (self._settings.get_boolean(["autocalib"]) == False ) :
 				self._logger.info("timer start")
 				#self.timer.start()
@@ -259,6 +269,17 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 			self._settings.set(['autocalib'], False)
 			self._settings.set(['calibrated'], True)
 			self._settings.save()
+
+	@staticmethod
+	def send_popup_message(self, msg):
+		self.send_plugin_message("popup", msg)
+
+	def start_timelapse(self):
+		return {'success': False,
+				'error': "Octolapse requires Octoprint v1.3.7 or above, but version v{0} is installed."
+				"  Please update Octoprint to use Octolapse.".format(octoprint.server.DISPLAY_VERSION),
+				'warning': False}
+
 
 
 __plugin_name__ = "Octo_Filament_Encoder"
