@@ -133,6 +133,12 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 					self.step.set_data(olddata)
 					erreur = (olddata-encoder_step)
 					#self._logger.info(encoder_step)
+					data = {
+						"type": "x_graph",
+						"msg": encoder_step,
+					}
+					#self.send_popup_message(self._identifier, message)
+					self._plugin_manager.send_plugin_message(self._identifier, data)
 					if (self._settings.get_boolean(["autocalib"]) == True ) :
 						self._logger.info("apres if autocalib")
 						if (self._settings.get(["methode"]) == "nextmove" ) :
@@ -158,7 +164,7 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 		return cmd,
 		
 	def on_event(self, event, payload):
-		self._logger.info("test strart print {event}".format(**locals()))
+		#self._logger.info("test strart print {event}".format(**locals()))
 		#result = self.start_timelapse()
 		message = "test akex on popup"
 		data = {
