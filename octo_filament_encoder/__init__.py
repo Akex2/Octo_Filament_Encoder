@@ -87,6 +87,8 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 		#self.t.start()
 		self.ratio = 1
 		self.bool = 0
+		self.cpt = 0
+		self.erreur = 0
 		#self._logger.info("init OK")
 
 	def rewrite_m107(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
@@ -131,14 +133,9 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 					olddata = self.step.get_data()
 					olddata = (stepsend+olddata)
 					self.step.set_data(olddata)
-					erreur = (olddata-encoder_step)
-					#self._logger.info(encoder_step)
-					data = {
-						"type": "x_graph",
-						"msg": encoder_step,
-					}
-					#self.send_popup_message(self._identifier, message)
-					self._plugin_manager.send_plugin_message(self._identifier, data)
+					self.erreur = (olddata-encoder_step)
+					self._logger.info(olddata)
+					
 					if (self._settings.get_boolean(["autocalib"]) == True ) :
 						self._logger.info("apres if autocalib")
 						if (self._settings.get(["methode"]) == "nextmove" ) :
@@ -148,6 +145,7 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 						self._logger.info("erreur: {erreur}".format(**locals()))
 						self._logger.info("erreur: {olddata}".format(**locals()))
 						self._logger.info("erreur: {encoder_step}".format(**locals()))
+
 						if (erreur > (self._settings.get_int(["errorMM"]))) :
 							self._logger.info("erreur: trop importante!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 							cmd = self._settings.get(["commande"])
@@ -158,7 +156,6 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 							#self._logger.info("B E step: {step}".format(**locals()))
 							#self._logger.info("B E holdstep: {holdstep}".format(**locals()))
 							#self._logger.info("B E stepsend: {stepsend}".format(**locals()))
-					
 		#olddata=(self.encoder.get_data())
 		#self._logger.info("compteur: {olddata}".format(**locals()))
 		return cmd,
@@ -214,7 +211,8 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 		intervale = self._settings.get(["loop"])
 		self.timer = RepeatedTimer(intervale, self.fromTimer, run_first=True,)
 		self.timer2 = RepeatedTimer(2, self.fromTimer2, run_first=True,)
-		
+		self.timer3 = RepeatedTimer(2, self.fromTimer3, run_first=True,)
+		self.timer3.start()
 
 	def get_template_configs(self):
 		return [
@@ -240,6 +238,16 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 		self.oldstep.set_data(0)
 		self.step.set_data(0)
 		self._logger.info("reset all data ")
+
+	def fromTimer3 (self):
+		self._logger.info("timer error ")
+		erreur = self.erreur
+		data = {
+						"type": "x_graph",
+						"msg": erreur,
+					}
+		self._plugin_manager.send_plugin_message(self._identifier, data)
+
 
 	def fromTimer2 (self):
 		'''

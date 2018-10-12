@@ -8,8 +8,11 @@ Octo_encoder = {};
  Octo_encoder.Printers = { 'current_profile_guid': function () {return null;}}
 Octo_encoderViewModel = {};
 
+
+
 $(function () {
     // Finds the first index of an array with the matching predicate
+
 
 
     Octo_encoder.displayPopup = function (options) {
@@ -23,6 +26,15 @@ $(function () {
         }
         Octo_encoder.Popups[key] = new PNotify(options);
     };
+
+    Octo_encoder.graphData = new Object;
+    Octo_encoder.graphData.x = [];
+    Octo_encoder.graphData.y = [];
+    Octo_encoder.graphData.type = 'scatter';
+    Octo_encoder.drawGraph = function(tehDatas) {
+        //console.log(tehDatas)
+        Plotly.newPlot('tester', tehDatas);
+    }
 
 
 
@@ -69,14 +81,28 @@ $(function () {
                     break;
                 case "x_graph":
                     {
-                        //console.log('octolapse.js - popup');
-                        var data = {
-                            x: data.msg,
-                            y: indice data.msg
-                            }
-                        };
+                        //console.log('Octo_encoder.js - graph');
+                        // de python : data = {"type": "x_graph", "msg": encoder_step
+                        if (Octo_encoder.graphData.y.length > 20) {
+                            Octo_encoder.graphData.y.shift();
+                        }
+                        Octo_encoder.graphData.y.push(parseInt(data.msg));
+                        Octo_encoder.graphData.x = [];
+                        for (var iii = 0 ; iii < Octo_encoder.graphData.y.length ; iii++) {
+                            Octo_encoder.graphData.x.push(iii);
+                        }
+                        //Octo_encoder.drawGraph(Octo_encoder.graphData);
+                        
+                        console.log(Octo_encoder.graphData)
+                        var trace1 = {
+                              x: Octo_encoder.graphData.x,
+                              y: Octo_encoder.graphData.y,
+                              type: 'scatter'
+                            };
+                        var data = [trace1];
 
                         Plotly.newPlot('tester', data);
+                        
                     }
                     break;
                 case "popup":
@@ -94,9 +120,9 @@ $(function () {
                               type: 'scatter'
                             };
 
-                        var data = [trace1, trace2];
+                        var data = [trace1];
 
-                        Plotly.newPlot('tester', data);
+                        //Plotly.newPlot('tester', data);
                         //Plotly.react('tester', data);
 
                     }
