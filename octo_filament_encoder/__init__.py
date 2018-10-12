@@ -218,7 +218,7 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 
 	def get_assets(self):
 		return dict(
-		js=["js/octo_encoder.js"]
+		js=["js/octo_encoder.js","js/plotly-latest.min.js"],
 		)
 
 	def on_settings_save(self, data):

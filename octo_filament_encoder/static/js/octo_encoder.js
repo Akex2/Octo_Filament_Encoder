@@ -76,17 +76,23 @@ $(function () {
                 case "popup":
                     {
                         //console.log('Octo_encoder.js - popup');
-                        var options = {
-                            title: 'Octo_encoder Notice',
-                            text: data.msg,
-                            type: 'notice',
-                            hide: true,
-                            addclass: "Octo_encoder",
-                            desktop: {
-                                desktop: true
-                            }
-                        };
-                        Octo_encoder.displayPopup(options);
+                        var trace1 = {
+                              x: [1, 2, 3, 4],
+                              y: [10, 15, 13, 17],
+                              type: 'scatter'
+                            };
+
+                        var trace2 = {
+                              x: [1, 2, 3, 4],
+                              y: [16, 5, 11, 9],
+                              type: 'scatter'
+                            };
+
+                        var data = [trace1, trace2];
+
+                        Plotly.newPlot('tester', data);
+                        //Plotly.react('tester', data);
+
                     }
                     break;
                 case "popup-error":
