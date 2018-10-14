@@ -10,9 +10,9 @@ Octo_encoderViewModel = {};
 
 
 
-$(function () {
+$(function (parameters) {
     // Finds the first index of an array with the matching predicate
-
+    self.settings = parameters[0];
 
 
     Octo_encoder.displayPopup = function (options) {
@@ -40,20 +40,40 @@ $(function () {
 
     Octo_encoderViewModel = function (parameters) {
         var self = this;
+        self.settingsViewModel = parameters[0]
+        self.controlViewModel = parameters[1];
+        self.Octo_Filament_EncoderViewModel = parameters[2];
         Octo_encoder.Globals = self;
+        /*
+        
+        */
         // Handle Plugin Messages from Server
-        self.onStartupComplete = function () {
-            console.log("Startup Complete")
+        self.onAfterBinding = function() { //self.onStartupComplete = function () {
+            //console.log("Startup Complete")
+            enable = self.settingsViewModel.settings.plugins.octo_encoder.enable();
+            enable_graph = self.settingsViewModel.settings.plugins.octo_encoder.enable_graph();
+            calibrated = self.settingsViewModel.settings.plugins.octo_encoder.calibrated();
+            console.log("enable", enable)
+            console.log("enable_graph", enable_graph)
+            console.log("calibrated", calibrated)
+            if ((enable == false) || (enable_graph == false) || (calibrated == false))
+            {
+                $('#tab_plugin_octo_encoder_link').hide();
+            }
+            //$('#control_link,#temp_link').hide();
+            //$('#tab_plugin_octo_encoder_link').hide();
             //self.getInitialState();
 
         };
         self.onDataUpdaterPluginMessage = function (plugin, data) {
-            console.log(plugin);
+            //console.log(plugin);
+            //console.log(self.settingsViewModel.settings.plugins.octo_encoder.autocalib());
             if (plugin !== "octo_encoder") {
-                console.log('Octo_encoder.js return');
+                //console.log(self.settingsViewModel.autocalib());
+                
                 return;
             }
-            console.log('Octo_encoder.js not return');
+            //console.log('Octo_encoder.js not return');
             switch (data.type) {
                 case "settings-changed":
                     {
@@ -93,44 +113,84 @@ $(function () {
                         }
                         //Octo_encoder.drawGraph(Octo_encoder.graphData);
                         
-                        console.log(Octo_encoder.graphData)
+                        //console.log(Octo_encoder.graphData)
                         var trace1 = {
                               x: Octo_encoder.graphData.x,
                               y: Octo_encoder.graphData.y,
                               type: 'scatter'
                             };
                         var data = [trace1];
+                        var layout = {
+                              autosize: false,
+                              width: 600,
+                              height: 500,
+                              margin: {
+                                l: 25,
+                                r: 2,
+                                b: 20,
+                                t: 20,
+                                pad: 4
+                              },
+                              //paper_bgcolor: '#7f7f7f',
+                              //plot_bgcolor: '#c7c7c7'
+                            };
 
-                        Plotly.newPlot('tester', data);
+                        Plotly.newPlot('tester', data, layout);
                         
                     }
                     break;
                 case "popup":
                     {
-                        //console.log('Octo_encoder.js - popup');
-                        var trace1 = {
-                              x: [1, 2, 3, 4],
-                              y: [10, 15, 13, 17],
-                              type: 'scatter'
-                            };
-
-                        var trace2 = {
-                              x: [1, 2, 3, 4],
-                              y: [16, 5, 11, 9],
-                              type: 'scatter'
-                            };
-
-                        var data = [trace1];
-
-                        //Plotly.newPlot('tester', data);
-                        //Plotly.react('tester', data);
-
+                        //console.log('octolapse.js - popup');
+                        var options = {
+                            title: 'Octo_encoder Notice',
+                            text: data.msg,
+                            type: 'notice',
+                            hide: true,
+                            addclass: "Octo_encoder",
+                            desktop: {
+                                desktop: true
+                            }
+                        };
+                        Octo_encoder.displayPopup(options, "warning");
                     }
                     break;
-                case "popup-error":
+                case "popup_success":
+                    {
+                        //console.log('Octo_encoder.js - popup');
+                        var options = {
+                            title: 'Octo_encoder Notice',
+                            text: data.msg,
+                            type: 'success',
+                            hide: true,
+                            addclass: "Octo_encoder",
+                            desktop: {
+                                desktop: true
+                            }
+                        };
+                        Octo_encoder.displayPopup(options);
+                    }
+                    break;
+                case "popup_info":
+                    {
+                        //console.log('Octo_encoder.js - popup');
+                        var options = {
+                            title: 'Octo_encoder Notice',
+                            text: data.msg,
+                            type: 'info',
+                            hide: true,
+                            addclass: "Octo_encoder",
+                            desktop: {
+                                desktop: true
+                            }
+                        };
+                        Octo_encoder.displayPopup(options);
+                    }
+                    break;
+                case "popup_error":
                     {
                         //console.log('Octo_encoder.js - popup-error');
-                        self.updateState(data);
+                        //self.updateState(data);
                         var options = {
                             title: 'Octo_encoder Startup Failed',
                             text: data.msg,
@@ -165,8 +225,8 @@ $(function () {
     };
     OCTOPRINT_VIEWMODELS.push([
         Octo_encoderViewModel
-        , ["loginStateViewModel", "printerStateViewModel"]
-        , ["#Octo_encoder"]
+        , ["settingsViewModel", "printerStateViewModel", "loginStateViewModel"]
+        , ["#settings_plugin_octo_encoder", "controlViewModel", "Octo_Filament_Encoder_ViewModel", "#Octo_encoder"]
     ]);
 
 

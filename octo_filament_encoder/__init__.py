@@ -68,7 +68,7 @@ class encoder():
 		self._logger.info("Stop Plugin")
 		self.my_thread.stop()  # Initial scale position
 
-class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
+class EncoderOctoClass(octoprint.plugin.TemplatePlugin,
 						octoprint.plugin.AssetPlugin,
 						octoprint.plugin.EventHandlerPlugin,
 						octoprint.plugin.StartupPlugin,
@@ -91,7 +91,7 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 		self.erreur = 0
 		#self._logger.info("init OK")
 
-	def rewrite_m107(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
+	def checkEcode(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
 		E = 'E'
 		#self._logger.info("phase: {phase}".format(**locals()))
 		#self._logger.info("cmd: {cmd}".format(**locals()))
@@ -169,8 +169,12 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 			"msg": message,
 		}
 		#self.send_popup_message(self._identifier, message)
-		self._plugin_manager.send_plugin_message(self._identifier, data)
+		#self._plugin_manager.send_plugin_message(self._identifier, data)
 		if event == "PrintStarted":
+			self._plugin_manager.send_plugin_message(self._identifier, {"type": "popup", "msg": message})
+			#self._plugin_manager.send_plugin_message(self._identifier, {"type": "popup_success", "msg": message})
+			#self._plugin_manager.send_plugin_message(self._identifier, {"type": "popup_info", "msg": message})
+			#self._plugin_manager.send_plugin_message(self._identifier, {"type": "popup_error", "msg": message})
 			self.encoder.set_data()
 			self.oldstep.set_data(0)
 			self.step.set_data(0)
@@ -179,6 +183,8 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 			if (self._settings.get_boolean(["autocalib"]) == False ) :
 				self._logger.info("timer start")
 				#self.timer.start()
+			else :
+				self._plugin_manager.send_plugin_message(self._identifier, {"type": "popup", "msg": "Autocalibration running!"})
 		if event == "PrintDone":
 			localtime = time.localtime(time.time())
 			self._logger.info(localtime)
@@ -205,7 +211,7 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 	def get_settings_defaults(self):
 
 		self._logger.info("get_settings_defaults!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-		return dict(enable =True, cprMM=1000, errorMM=2, autocalib=True, calibrated=False, methode="nextprint", loop=20)
+		return dict(enable =True,enable_graph =True, cprMM=1000, errorMM=2, autocalib=True, calibrated=False, methode="nextprint", loop=20)
 
 	def on_after_startup(self):
 		intervale = self._settings.get(["loop"])
@@ -240,7 +246,7 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 		self._logger.info("reset all data ")
 
 	def fromTimer3 (self):
-		self._logger.info("timer error ")
+		#self._logger.info("timer error ")
 		erreur = self.erreur
 		data = {
 						"type": "x_graph",
@@ -283,6 +289,24 @@ class RewriteM107Plugin(octoprint.plugin.TemplatePlugin,
 			self._settings.set(['autocalib'], False)
 			self._settings.set(['calibrated'], True)
 			self._settings.save()
+			self._plugin_manager.send_plugin_message(self._identifier, {"type": "popup_success", "msg": "Autocalibration Done!"})
+
+	def get_update_information(self):
+		return dict(
+			automaticshutdown=dict(
+			displayName="Octo_Filament_Encoder",
+			displayVersion=self._plugin_version,
+
+			# version check: github repository
+			type="github_release",
+			user="Akex2",
+			repo="Octo_Filament_Encoder",
+			current=self._plugin_version,
+
+			# update method: pip w/ dependency links
+			pip="https://github.com/Akex2/Octo_Filament_Encoder/archive/{target_version}.zip"
+		)
+	)
 
 	@staticmethod
 	def send_popup_message(self, msg):
@@ -302,7 +326,7 @@ def __plugin_load__():
 
 	global __plugin_implementation__
 
-	__plugin_implementation__ = RewriteM107Plugin()
+	__plugin_implementation__ = EncoderOctoClass()
 	#__plugin_implementation__ = HelloWorldPlugin()
 
 
@@ -310,7 +334,7 @@ def __plugin_load__():
 
 	__plugin_hooks__ = {
 
-		"octoprint.comm.protocol.gcode.queuing": __plugin_implementation__.rewrite_m107
+		"octoprint.comm.protocol.gcode.queuing": __plugin_implementation__.checkEcode
 
 	}
 
